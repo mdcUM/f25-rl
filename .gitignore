@@ -1,0 +1,54 @@
+# ----------------
+# Python
+# ----------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.egg-info/
+dist/
+build/
+.python-version
+
+# Virtual environment
+env/
+.venv/
+venv/
+ENV/
+*.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs & outputs
+*.log
+*.out
+*.err
+*.DS_Store
+
+# ----------------
+# Unity (if teammates push Unity projects here)
+# ----------------
+[Ll]ibrary/
+[Tt]emp/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+UserSettings/
+*.unitypackage
+
+# ----------------
+# MacOS system files
+# ----------------
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ----------------
+# IDE / Editors
+# ----------------
+.vscode/
+.idea/
+*.swp
