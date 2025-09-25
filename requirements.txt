@@ -1,8 +1,17 @@
-mlagents==0.30.0
-mlagents-envs==0.30.0
+# ML-Agents trainers (from Unity's GitHub, release_20 tag = ML-Agents 4.0.0)
+git+https://github.com/Unity-Technologies/ml-agents.git@release_23#subdirectory=ml-agents-envs
+git+https://github.com/Unity-Technologies/ml-agents.git@release_23#subdirectory=ml-agents
+
+# Deep learning
 torch==2.3.1
-numpy==1.26.4
+numpy>=1.23.5,<1.24.0
+
+# Serialization / RPC
+protobuf>=3.20.0,<5.0.0
+grpcio>=1.51.0,<1.54.0
+
+# Logging & analysis
 tensorboard==2.17.0
-protobuf==4.25.3
 matplotlib==3.9.0
 pandas==2.2.2
+h5py==3.11.0
