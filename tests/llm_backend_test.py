@@ -7,12 +7,12 @@ import json
 
 # Define a sample character state
 state = {
-    "name": "Grindle",
-    "health": 70,
-    "greed": 8,
-    "fatigue": 3,
+    "name": "Cyrus",
+    "health": 50,
+    "greed": 10,
+    "fatigue": 5,
     "risk_aversion": 5,
-    "goals": ["Corner the Market on Weasel Pelts"]
+    "goals": ["Land Google Internship"]
 }
 
 prompt = f"""

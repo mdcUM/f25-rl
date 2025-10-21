@@ -1,22 +1,31 @@
-# ML-Agents trainers (from Unity's GitHub, release_20 tag = ML-Agents 4.0.0)
-git+https://github.com/Unity-Technologies/ml-agents.git@release_23#subdirectory=ml-agents-envs
-git+https://github.com/Unity-Technologies/ml-agents.git@release_23#subdirectory=ml-agents
+# LLM and local inference
+ollama>=0.1.7
 
-# Deep learning
-torch==2.3.1
-numpy>=1.23.5,<1.24.0
+# Utilities and data handling
+regex>=2023.10.3
+json5>=0.9.14
+typing-extensions>=4.9.0
 
-# Serialization / RPC
-protobuf>=3.20.0,<5.0.0
-grpcio>=1.51.0,<1.54.0
+# WE WILL ONLY GET TO THE BOTTOM PARTS IF WE ACTUALLY GET TO USING ML-AGENTS
+# # ML-Agents trainers (from Unity's GitHub, release_20 tag = ML-Agents 4.0.0)
+# git+https://github.com/Unity-Technologies/ml-agents.git@release_23#subdirectory=ml-agents-envs
+# git+https://github.com/Unity-Technologies/ml-agents.git@release_23#subdirectory=ml-agents
 
-# Logging & analysis
-tensorboard==2.17.0
-matplotlib==3.9.0
-pandas==2.2.2
-h5py==3.11.0
+# # Deep learning
+# torch==2.3.1
+# numpy>=1.23.5,<1.24.0
 
-# Ollama utilities
-ollama==0.1.6
-fastapi==0.100.0
-pydantic==2.7.2
+# # Serialization / RPC
+# protobuf>=3.20.0,<5.0.0
+# grpcio>=1.51.0,<1.54.0
+
+# # Logging & analysis
+# tensorboard==2.17.0
+# matplotlib==3.9.0
+# pandas==2.2.2
+# h5py==3.11.0
+
+# # Ollama utilities
+# ollama==0.1.6
+# fastapi==0.100.0
+# pydantic==2.7.2
