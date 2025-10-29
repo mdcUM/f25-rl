@@ -1,11 +1,17 @@
 {
   "traits": {
-    "charm": 0.87
+    "awkwardness": 0.5
   },
-  "goals": [],
+  "goals": [
+    "escape the town"
+  ],
   "memory": [
-    "the merchant's surprise",
-    "Cyrus performs talk on merchant in market_square",
-    "Cyrus performs talk on merchant in market_square"
+    "Cyrus got beat by the merchant so he doesn't want to talk to him.",
+    "the merchant ignored him.",
+    "The merchant ignored him.",
+    "the merchant seemed to be enjoying the conversation.",
+    "the merchant liked my conversation.",
+    "the merchant invited me to chat with him.",
+    "I agreed to chat with the merchant."
   ]
 }

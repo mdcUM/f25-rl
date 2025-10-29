@@ -122,9 +122,7 @@ class LLMCharacterPolicy:
 
         prompt = f"""
 You are {char.name}, a character in an evolving story simulation.
-
 Last action: {last_action}
-Last reward: {last_reward}
 
 Scene:
 - Location: {scene.location}
@@ -136,9 +134,10 @@ Your JSON state (editable and persistent between turns):
 
 Plot so far: {plot.summarize()}
 
-Reflect briefly on your previous choice and continue the story. 
-Describe what happens next as a short paragraph of narrative text that a reader could enjoy.
-Then decide your next action from the available options.
+Reflect on your previous choice and continue the story. 
+Describe what happens next as a short paragraph of narrative text.
+Decide your next action from the available options, choosing options based on how new they are.
+Do not choose the same action repeatedly unless it makes sense. 
 
 Respond STRICTLY as JSON in this format:
 {{
@@ -164,12 +163,12 @@ Respond STRICTLY as JSON in this format:
                 print("\n" + story + "\n")
 
             us = data.get("updated_state", {})
-            if "traits" in us:
-                char.traits = us["traits"]
-            if "goals" in us:
-                char.goals = us["goals"]
+            # if "traits" in us:
+            #     char.traits = us["traits"]
+            # if "goals" in us:
+            #     char.goals.extend(us["goals"])
             if "memory" in us:
-                char.memory = us["memory"]
+                char.memory.extend(us["memory"])
             char.save()
 
             return (data["action"], data["target"])
@@ -194,11 +193,8 @@ class GameLoop:
         action = self.policy.select_and_update(self.scene, self.character, self.plot)
         event = f"{self.character.name} performs {action[0]} on {action[1]} in {self.scene.location}"
         print(f"Action: {event}")
-        self.character.remember(event)
+        # self.character.remember(event)
         self.plot.add_event(event)
-
-        reward = random.uniform(-1, 1)
-        self.character.update_short_term("last_reward", reward)
         print(f"Plot summary: {self.plot.summarize()}\n")
 
 
