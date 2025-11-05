@@ -127,9 +127,7 @@ class LLMCharacterPolicy:
 
         action_prompt = f"""
 You are {char.name}, a character in an evolving story simulation.
-
 Last action: {last_action}
-Last reward: {last_reward}
 
 Scene:
 - Location: {scene.location}
@@ -208,12 +206,12 @@ Respond STRICTLY as JSON in this format:
                 print("\n" + story + "\n")
 
             us = data.get("updated_state", {})
-            if "traits" in us:
-                char.traits = us["traits"]
-            if "goals" in us:
-                char.goals = us["goals"]
+            # if "traits" in us:
+            #     char.traits = us["traits"]
+            # if "goals" in us:
+            #     char.goals.extend(us["goals"])
             if "memory" in us:
-                char.memory = us["memory"]
+                char.memory.extend(us["memory"])
             char.save()
 
             return (action_text, story, reward)
