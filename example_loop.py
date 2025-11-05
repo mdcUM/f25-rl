@@ -83,8 +83,8 @@ class PlotContext:
     def __init__(self):
         self.events = []
 
-    def add_event(self, event: str):
-        self.events.append(event)
+    def add_event(self, story: str):
+        self.events.append(story)
 
     def summarize(self) -> str:
         if not self.events:
@@ -113,14 +113,19 @@ class LLMCharacterPolicy:
             messages=[{"role": "user", "content": prompt}],
         )
         return r["message"]["content"]
-
+    
+    # 1. Have the model choose an action but nothing else
+    # 2. Determine reward ourselves
+    # Alternative: Give model in-game feedback from the event and have it return the reward itself
+    # Example feedback: action has been picked too many times, certain in-game events that we can allow to randomly happen
+    # 3. Have the model update memory/state and make story based on reward
     def select_and_update(
         self, scene: SceneContext, char: CharacterContext, plot: PlotContext
-    ) -> (str, str):
+    ) -> (str, str, float):
         last_action = char.memory[-1] if char.memory else "None"
         last_reward = char.short_term.get("last_reward", 0)
 
-        prompt = f"""
+        action_prompt = f"""
 You are {char.name}, a character in an evolving story simulation.
 
 Last action: {last_action}
@@ -136,14 +141,52 @@ Your JSON state (editable and persistent between turns):
 
 Plot so far: {plot.summarize()}
 
-Reflect briefly on your previous choice and continue the story. 
-Describe what happens next as a short paragraph of narrative text that a reader could enjoy.
-Then decide your next action from the available options.
+Based on your traits, goals, memory, and the evolving plot, choose your next action to complete. 
+When deciding your action, you should have your long-term goal in mind. Repeating an action over and over is highly discouraged.
+Given the plot summary, you are HIGHLY encouraged to choose an action that deviates from your previous actions.
 
+Your action should have made a significant contribution to the plot and made steps towards your goal.
 Respond STRICTLY as JSON in this format:
 {{
   "action": "<verb>",
-  "target": "<object>",
+  "target": "<object>"
+}}
+
+"""
+        text = self.chat(action_prompt)
+        match = re.search(r"\{.*\}", text, re.DOTALL)
+        if not match:
+            print("(Model output unparseable, picking random action.)")
+            return random.choice(scene.get_affordances())
+        try:
+            data = json.loads(match.group())
+            action_text = f"{char.name} performs {data["action"]} on {data["target"]} in {scene.location}"
+        except Exception as e:
+            print(f"(Parsing error: {e})")
+            return random.choice(scene.get_affordances())
+
+        reward = random.uniform(-5, 5)
+        char.update_short_term("last_reward", reward)
+
+        reward_prompt = f"""
+You are {char.name}, a character in an evolving story simulation.
+
+Scene:
+- Location: {scene.location}
+- Objects: {scene.objects}
+- Possible actions: {scene.actions}
+
+Your JSON state (editable and persistent between turns):
+{json.dumps({"traits": char.traits, "goals": char.goals, "memory": char.memory[-5:]}, indent=2)}
+
+You've taken the following action: {action_text}.
+The action resulted in a reward of {reward}. The reward is a numerical value indicating how well the action contributed to your goals and the plot.
+
+Given the action and reward, describe how the event occurred as a short paragraph of narrative text that a reader could enjoy.
+It is crucial that your description of the action reflects our numerical reward. If the reward is negative, the action should have had negative consequences or failed to contribute meaningfully to your goals.
+
+Respond STRICTLY as JSON in this format:
+{{
   "story": "<narrative paragraph>",
   "updated_state": {{
     "traits": {{...}},
@@ -152,13 +195,14 @@ Respond STRICTLY as JSON in this format:
   }}
 }}
 """
-        text = self.chat(prompt)
+        text = self.chat(reward_prompt)
         match = re.search(r"\{.*\}", text, re.DOTALL)
         if not match:
             print("(Model output unparseable, picking random action.)")
             return random.choice(scene.get_affordances())
         try:
             data = json.loads(match.group())
+            # Natural language description of the character's new action
             story = data.get("story", "").strip()
             if story:
                 print("\n" + story + "\n")
@@ -172,7 +216,7 @@ Respond STRICTLY as JSON in this format:
                 char.memory = us["memory"]
             char.save()
 
-            return (data["action"], data["target"])
+            return (action_text, story, reward)
         except Exception as e:
             print(f"(Parsing error: {e})")
             return random.choice(scene.get_affordances())
@@ -192,13 +236,11 @@ class GameLoop:
 
     def step(self):
         action = self.policy.select_and_update(self.scene, self.character, self.plot)
-        event = f"{self.character.name} performs {action[0]} on {action[1]} in {self.scene.location}"
-        print(f"Action: {event}")
-        self.character.remember(event)
-        self.plot.add_event(event)
+        print(f"Action: {action[0]}")
+        self.character.remember(action[0])
+        self.plot.add_event(action[1] if len(action) > 1 else action[0])
 
-        reward = random.uniform(-1, 1)
-        self.character.update_short_term("last_reward", reward)
+        print("Reward:", action[2] if len(action) > 2 else 0)
         print(f"Plot summary: {self.plot.summarize()}\n")
 
 
@@ -223,5 +265,5 @@ if __name__ == "__main__":
     policy = LLMCharacterPolicy("gemma:2b")
     game = GameLoop(scene_marketplace, char, plot, policy)
 
-    for _ in range(3):
+    for _ in range(10):
         game.step()

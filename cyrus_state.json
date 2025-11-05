@@ -1,11 +1,17 @@
 {
   "traits": {
-    "curiosity": 0.5
+    "hunger": 0.0001
   },
-  "goals": [],
+  "goals": [
+    "eat bread"
+  ],
   "memory": [
-    "Cyrus introduces himself to the merchant",
-    "merchant expresses interest in learning about Cyrus's journey",
-    "Cyrus performs talk on merchant in market_square"
+    "talk",
+    "inspect",
+    "Cyrus performs inspect on fountain in market_square",
+    "Cyrus performs inspect on fountain in market_square",
+    "talk",
+    "Cyrus performs talk on merchant in market_square",
+    "give"
   ]
 }
