@@ -1,0 +1,17 @@
+{
+  "traits": {
+    "hunger": 0.0001
+  },
+  "goals": [
+    "eat bread"
+  ],
+  "memory": [
+    "talk",
+    "inspect",
+    "Cyrus performs inspect on fountain in market_square",
+    "Cyrus performs inspect on fountain in market_square",
+    "talk",
+    "Cyrus performs talk on merchant in market_square",
+    "give"
+  ]
+}
