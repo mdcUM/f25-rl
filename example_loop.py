@@ -152,13 +152,14 @@ Respond STRICTLY as JSON in this format:
 
 """
         text = self.chat(action_prompt)
+        print(f"{'#' * 50}\nAction Respose:\n{text}\n{'#' * 50}")
         match = re.search(r"\{.*\}", text, re.DOTALL)
         if not match:
             print("(Model output unparseable, picking random action.)")
             return random.choice(scene.get_affordances())
         try:
             data = json.loads(match.group())
-            action_text = f"{char.name} performs {data["action"]} on {data["target"]} in {scene.location}"
+            action_text = f"{char.name} performs {data['action']} on {data['target']} in {scene.location}"
         except Exception as e:
             print(f"(Parsing error: {e})")
             return random.choice(scene.get_affordances())
@@ -178,9 +179,9 @@ Your JSON state (editable and persistent between turns):
 {json.dumps({"traits": char.traits, "goals": char.goals, "memory": char.memory[-5:]}, indent=2)}
 
 You've taken the following action: {action_text}.
-The action resulted in a reward of {reward}. The reward is a numerical value indicating how well the action contributed to your goals and the plot.
+The action resulted in a reward of {reward}. The reward is a numerical value indicating how well the action contributed to your goals and the plot. {char.name} does not actually recieve a tangible reward, this is only used to guide your further actions.
 
-Given the action and reward, describe how the event occurred as a short paragraph of narrative text that a reader could enjoy.
+Given the action and reward, describe how the event occurred as 1-3 sentences of narrative text that a reader could enjoy.
 It is crucial that your description of the action reflects our numerical reward. If the reward is negative, the action should have had negative consequences or failed to contribute meaningfully to your goals.
 
 Respond STRICTLY as JSON in this format:
@@ -194,10 +195,11 @@ Respond STRICTLY as JSON in this format:
 }}
 """
         text = self.chat(reward_prompt)
+        print(f"{'#' * 50}\nReward Response:\n{text}\n{'#' * 50}")
         match = re.search(r"\{.*\}", text, re.DOTALL)
         if not match:
-            print("(Model output unparseable, picking random action.)")
-            return random.choice(scene.get_affordances())
+            print("(Model output unparseable, returning base action.)")
+            return (action_text, action_text, reward)
         try:
             data = json.loads(match.group())
             # Natural language description of the character's new action
