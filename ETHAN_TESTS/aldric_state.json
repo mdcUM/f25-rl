@@ -8,10 +8,10 @@
     "travel and explore"
   ],
   "memory": [
-    "Clashed with Keeper, injured in fiery outburst.",
-    "Aldric performed 'Accept a Quest' with outcome 'Clean the Hero Statue \u2192 Cleaned +10 money'",
-    "Earned 10 copper pennies by cleaning statue.",
-    "Aldric performed 'Accept a Quest' with outcome 'Defend a Caravan \u2192 Protect the caravan +20 money'",
-    "Defended caravan from harm on 23rd Day of Harvest."
+    "Chat with Keeper \u2192 Receive a gift from Keeper \u2192 Health potion +10 health",
+    "Chat with Keeper \u2192 Receive a gift from Keeper \u2192 Health potion +10 health",
+    "Accept a Quest \u2192 Defend a Caravan \u2192 Abandon caravan -10 health",
+    "Chat with Keeper \u2192 Receive a gift from Keeper \u2192 Health potion +10 health",
+    "Chat with Keeper \u2192 Keeper encourages you (+10 mood)"
   ]
 }

@@ -83,9 +83,10 @@ class CharacterMemory:
 
         self.short_term = {"last_reward": 0.0, "emotion": "neutral"}
 
-    def remember(self, event: str):
-        """Add summarized event to memory (keep last 5)."""
-        self.memory.append(event)
+    def remember(self, action: str, outcome: str):
+        """Add (action, outcome) summary to memory (keep last 5)."""
+        entry = f"{action} → {outcome}"
+        self.memory.append(entry)
         if len(self.memory) > 5:
             self.memory.pop(0)
         self.save()
@@ -99,7 +100,8 @@ class CharacterMemory:
         with open(self.file_path, "w") as f:
             json.dump(
                 {"traits": self.traits, "goals": self.goals, "memory": self.memory},
-                f, indent=2
+                f,
+                indent=2,
             )
 
 
@@ -193,7 +195,7 @@ def perform_action(npc: NPC, action: str) -> str:
         npc.adjust_state(sub_outcome)
         outcome = f"{outcome} → {sub_outcome}"
 
-    npc.memory.remember(f"{npc.name} performed '{action}' with outcome '{outcome}'")
+    npc.memory.remember(action, outcome)
 
     return outcome
 
@@ -247,20 +249,6 @@ Keep it immersive and in-character.
 """
     report = ollama_chat(prompt)
     npc.last_report = report
-
-    # Ask LLM to summarize the day's events into a concise memory entry
-    summary_prompt = f"""
-Summarize the following journal entry into a single, short (<=10 words) memory for {npc.name}.
-Journal entry:
-\"\"\"{report}\"\"\"
-Respond with only the concise summary.
-"""
-    short_memory = ollama_chat(summary_prompt, temperature=0.5)
-    short_memory = short_memory.strip().replace("\n", " ")
-
-    # Store the concise version in long-term memory
-    npc.memory.remember(short_memory)
-
     return report
 
 
