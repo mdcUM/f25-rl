@@ -70,7 +70,6 @@ class NPC:
         self.money = money
         self.mood = mood
         self.last_report = "Woke up in the tavern."
-        self.bias = {action: 1.0 for action in ACTIONS}  # bias multiplier per action
         self.decision_log: List[Dict[str, Any]] = []     # decision history
 
     def state(self) -> Dict[str, Any]:
@@ -151,58 +150,72 @@ def perform_action(npc: NPC, action: str) -> str:
         npc.adjust_state(sub_outcome)
         outcome = f"{outcome} → {sub_outcome}"
 
-    # Update bias: success = higher bias, damage = lower bias
-    if any(x in outcome for x in ["+money", "+mood", "+health"]):
-        npc.bias[action] *= 1.1
-    elif any(x in outcome for x in ["-health", "-money", "Die"]):
-        npc.bias[action] *= 0.9
-
-    # Normalize bias
-    total_bias = sum(npc.bias.values())
-    for k in npc.bias:
-        npc.bias[k] = max(0.1, npc.bias[k] / total_bias)
-
     return outcome
 
 
 # ============================================================
 # LLM DECISIONS
 # ============================================================
-def choose_action_llm(npc: NPC) -> str:
-    # Dynamically determine available actions
+def get_human_input() -> str:
+    """Get advice from human player."""
+    print("\n>>> What advice do you give to the NPC? (or press Enter to skip)")
+    advice = input("Your advice: ").strip()
+    return advice if advice else None
+
+def choose_action_llm(npc: NPC, human_advice: str = None) -> str:
     available_actions = ["Chat with Keeper", "Get Drunk"]
     if npc.mood > 50 and npc.health > 60:
         available_actions.append("Accept a Quest")
 
-    # Build the action list string for the prompt
     action_list = ", ".join(available_actions)
+    
+    advice_section = ""
+    if human_advice:
+        advice_section = f"""
+A traveler urgently advises you: "{human_advice}"
+
+This advice seems important. You should consider it and explain your reasoning for following or ignoring it.
+"""
 
     prompt = f"""
-You are roleplaying {npc.name}, a {', '.join(npc.traits)} adventurer resting in a medieval tavern.
-You may choose ONE of the following actions today: {action_list}.
+You are roleplaying {npc.name}, a {', '.join(npc.traits)} adventurer in a medieval tavern.
 
 Your current state:
 Health={npc.health}, Money={npc.money}, Mood={npc.mood}
+{advice_section}
+
+Available actions: {action_list}
 
 Decision rules:
-- If health is low (<40), avoid dangerous or strenuous activities.
-- If money is low (<50), prioritize quests or ways to earn gold.
-- If mood is low (<40), choose actions that can raise it.
-- You are curious and impulsive, so you may occasionally take risks.
+- If health is low (<40), avoid dangerous activities
+- If money is low (<50), prioritize earning gold
+- If mood is low (<40), seek mood-boosting activities
+- You are curious and impulsive, so you take risks
+- If someone gives you urgent advice, take it seriously (though you may still disagree)
 
-Respond ONLY with one of the available actions exactly as written: {action_list}.
+Think step-by-step:
+1. What is the traveler's advice about?
+2. Does it make sense given your situation?
+3. What action best addresses this concern?
+
+Respond in this format:
+REASONING: [ONE sentence about the advice and your decision]
+ACTION: [one of: {action_list}]
 """
 
-    response = ollama_chat(prompt, temperature=0.9)
-
-    # Ensure the response matches one of the valid actions
+    response = ollama_chat(prompt, temperature=0.5)
+    
+    # Extract and display reasoning compactly
+    if "REASONING:" in response:
+        reasoning_line = response.split("REASONING:")[1].split("ACTION:")[0].strip()
+        print(f"{reasoning_line}")
+    
+    # Parse the action
     for act in available_actions:
-        if act.lower() in response.lower():
+        if f"ACTION: {act}" in response or act.lower() in response.lower().split("action:")[-1]:
             return act
 
-    # Fallback: if LLM gives an invalid response, default to the safest option
     return "Chat with Keeper"
-
 
 
 def describe_day_llm(npc: NPC, action: str, event: str) -> str:
@@ -240,13 +253,17 @@ def run_simulation(days: int = 10):
 
     for day in range(1, days + 1):
         print(f"\n--- DAY {day} ---")
+        print(f"Current State: Health={npc.health}, Money={npc.money}, Mood={npc.mood}")
 
         adjust_mood_llm(npc)
         if not npc.alive():
             print("NPC has died. Simulation ends.")
             break
 
-        action = choose_action_llm(npc)
+        # Get human advice
+        human_advice = "" if day == 1 else get_human_input()
+
+        action = choose_action_llm(npc, human_advice)
         print(f"Chosen action: {action}")
 
         event = perform_action(npc, action)
@@ -257,13 +274,12 @@ def run_simulation(days: int = 10):
 
         npc.last_report = eod_report
 
-        # log
         npc.decision_log.append({
             "day": day,
             "action": action,
             "outcome": event,
-            "state": npc.state(),
-            "bias": dict(npc.bias)
+            "human_advice": human_advice,
+            "state": npc.state()
         })
 
         if npc.won():
