@@ -1,0 +1,17 @@
+{
+  "traits": {
+    "curiosity": 0.6,
+    "greed": 0.4
+  },
+  "goals": [
+    "seek knowledge",
+    "travel and explore"
+  ],
+  "memory": [
+    "Clashed with Keeper, injured in fiery outburst.",
+    "Aldric performed 'Accept a Quest' with outcome 'Clean the Hero Statue \u2192 Cleaned +10 money'",
+    "Earned 10 copper pennies by cleaning statue.",
+    "Aldric performed 'Accept a Quest' with outcome 'Defend a Caravan \u2192 Protect the caravan +20 money'",
+    "Defended caravan from harm on 23rd Day of Harvest."
+  ]
+}

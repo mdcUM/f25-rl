@@ -7,7 +7,6 @@ from typing import Dict, Any, List
 # ============================================================
 ACTIONS = ["Chat with Keeper", "Accept a Quest", "Get Drunk"]
 
-# Outcome probabilities
 ACTION_OUTCOMES = {
     "Chat with Keeper": {
         "outcomes": [
@@ -60,6 +59,51 @@ SECONDARY_OUTCOMES = {
 }
 
 # ============================================================
+# MEMORY SYSTEM
+# ============================================================
+class CharacterMemory:
+    """Handles persistent and short-term memory for an NPC."""
+
+    def __init__(self, name: str, file_path: str):
+        self.name = name
+        self.file_path = file_path
+        if os.path.exists(file_path):
+            with open(file_path, "r") as f:
+                data = json.load(f)
+        else:
+            data = {
+                "traits": {"curiosity": 0.6, "greed": 0.4},
+                "goals": ["seek adventure", "earn wealth"],
+                "memory": [],
+            }
+
+        self.traits = data["traits"]
+        self.goals = data["goals"]
+        self.memory = data["memory"]
+
+        self.short_term = {"last_reward": 0.0, "emotion": "neutral"}
+
+    def remember(self, event: str):
+        """Add summarized event to memory (keep last 5)."""
+        self.memory.append(event)
+        if len(self.memory) > 5:
+            self.memory.pop(0)
+        self.save()
+
+    def summarize(self) -> str:
+        if not self.memory:
+            return "No memories yet."
+        return " → ".join(self.memory[-5:])
+
+    def save(self):
+        with open(self.file_path, "w") as f:
+            json.dump(
+                {"traits": self.traits, "goals": self.goals, "memory": self.memory},
+                f, indent=2
+            )
+
+
+# ============================================================
 # NPC CLASS
 # ============================================================
 class NPC:
@@ -70,8 +114,10 @@ class NPC:
         self.money = money
         self.mood = mood
         self.last_report = "Woke up in the tavern."
-        self.bias = {action: 1.0 for action in ACTIONS}  # bias multiplier per action
-        self.decision_log: List[Dict[str, Any]] = []     # decision history
+        self.decision_log: List[Dict[str, Any]] = []
+
+        # Persistent memory system
+        self.memory = CharacterMemory(name, f"{name.lower()}_state.json")
 
     def state(self) -> Dict[str, Any]:
         return {
@@ -83,7 +129,6 @@ class NPC:
         }
 
     def adjust_state(self, effect: str):
-        """Apply numeric effects extracted from text outcomes."""
         if "+10 mood" in effect:
             self.mood = min(100, self.mood + 10)
         elif "-10 mood" in effect:
@@ -122,7 +167,6 @@ class NPC:
 # OLLAMA INTERFACE
 # ============================================================
 def ollama_chat(prompt: str, model="llama3.1", temperature: float = 0.9):
-    """Wrapper to call Ollama model with error handling."""
     try:
         response = ollama.chat(
             model=model,
@@ -132,35 +176,24 @@ def ollama_chat(prompt: str, model="llama3.1", temperature: float = 0.9):
         return response["message"]["content"].strip()
     except Exception as e:
         print(f"LLM error: {e}")
-        return "Get Drunk"  # fallback
+        return "Get Drunk"
 
 
 # ============================================================
 # ACTION LOGIC
 # ============================================================
 def perform_action(npc: NPC, action: str) -> str:
-    """Simulate performing an action with probabilistic outcomes."""
     base = ACTION_OUTCOMES[action]
     outcome = random.choices(base["outcomes"], weights=base["probs"], k=1)[0]
     npc.adjust_state(outcome)
 
-    # Possible secondary effect
     if outcome in SECONDARY_OUTCOMES:
         sec = SECONDARY_OUTCOMES[outcome]
         sub_outcome = random.choices(sec["outcomes"], weights=sec["probs"], k=1)[0]
         npc.adjust_state(sub_outcome)
         outcome = f"{outcome} → {sub_outcome}"
 
-    # Update bias: success = higher bias, damage = lower bias
-    if any(x in outcome for x in ["+money", "+mood", "+health"]):
-        npc.bias[action] *= 1.1
-    elif any(x in outcome for x in ["-health", "-money", "Die"]):
-        npc.bias[action] *= 0.9
-
-    # Normalize bias
-    total_bias = sum(npc.bias.values())
-    for k in npc.bias:
-        npc.bias[k] = max(0.1, npc.bias[k] / total_bias)
+    npc.memory.remember(f"{npc.name} performed '{action}' with outcome '{outcome}'")
 
     return outcome
 
@@ -169,16 +202,18 @@ def perform_action(npc: NPC, action: str) -> str:
 # LLM DECISIONS
 # ============================================================
 def choose_action_llm(npc: NPC) -> str:
-    # Dynamically determine available actions
     available_actions = ["Chat with Keeper", "Get Drunk"]
     if npc.mood > 50 and npc.health > 60:
         available_actions.append("Accept a Quest")
 
-    # Build the action list string for the prompt
     action_list = ", ".join(available_actions)
 
     prompt = f"""
 You are roleplaying {npc.name}, a {', '.join(npc.traits)} adventurer resting in a medieval tavern.
+
+Your long-term goals: {npc.memory.goals}.
+Recent memories: {npc.memory.summarize()}.
+
 You may choose ONE of the following actions today: {action_list}.
 
 Your current state:
@@ -192,32 +227,44 @@ Decision rules:
 
 Respond ONLY with one of the available actions exactly as written: {action_list}.
 """
-
     response = ollama_chat(prompt, temperature=0.9)
-
-    # Ensure the response matches one of the valid actions
     for act in available_actions:
         if act.lower() in response.lower():
             return act
-
-    # Fallback: if LLM gives an invalid response, default to the safest option
     return "Chat with Keeper"
 
 
-
 def describe_day_llm(npc: NPC, action: str, event: str) -> str:
+    """Generate the immersive daily report and store a short summary in memory."""
     prompt = f"""
 Write a short (2-3 sentence) medieval-style journal entry describing the day of {npc.name}.
 Today's action: {action}.
 Outcome: {event}.
+Recent memories: {npc.memory.summarize()}.
+Long-term goals: {npc.memory.goals}.
 NPC State at end: Health={npc.health}, Money={npc.money}, Mood={npc.mood}.
 Keep it immersive and in-character.
 """
-    return ollama_chat(prompt)
+    report = ollama_chat(prompt)
+    npc.last_report = report
+
+    # Ask LLM to summarize the day's events into a concise memory entry
+    summary_prompt = f"""
+Summarize the following journal entry into a single, short (<=10 words) memory for {npc.name}.
+Journal entry:
+\"\"\"{report}\"\"\"
+Respond with only the concise summary.
+"""
+    short_memory = ollama_chat(summary_prompt, temperature=0.5)
+    short_memory = short_memory.strip().replace("\n", " ")
+
+    # Store the concise version in long-term memory
+    npc.memory.remember(short_memory)
+
+    return report
 
 
 def adjust_mood_llm(npc: NPC) -> None:
-    """Ask LLM how mood should change based on previous day."""
     prompt = f"""
 NPC current state: {npc.state()}.
 Yesterday's report: {npc.last_report}.
@@ -229,6 +276,27 @@ Based on the events, how should mood adjust (-10 to +10)? Respond with a single 
         npc.mood = max(0, min(100, npc.mood + mood_change))
     except:
         pass
+
+
+def reflect_llm(npc: NPC):
+    """Every few days, let the NPC update goals or reflect."""
+    prompt = f"""
+You are {npc.name}, reflecting on your recent adventures and memories:
+{npc.memory.summarize()}.
+Current goals: {npc.memory.goals}.
+Based on your experiences, suggest any goal or mindset adjustments (if any).
+Respond as JSON: {{ "goals": [...], "reflection": "<short text>" }}
+"""
+    resp = ollama_chat(prompt)
+    match = re.search(r"\{.*\}", resp, re.DOTALL)
+    if match:
+        try:
+            data = json.loads(match.group())
+            npc.memory.goals = data.get("goals", npc.memory.goals)
+            npc.memory.remember(f"Reflection: {data.get('reflection', '')}")
+            npc.memory.save()
+        except:
+            pass
 
 
 # ============================================================
@@ -256,14 +324,11 @@ def run_simulation(days: int = 10):
         print(f"Report:\n{eod_report}")
 
         npc.last_report = eod_report
-
-        # log
         npc.decision_log.append({
             "day": day,
             "action": action,
             "outcome": event,
             "state": npc.state(),
-            "bias": dict(npc.bias)
         })
 
         if npc.won():
@@ -272,6 +337,9 @@ def run_simulation(days: int = 10):
         if not npc.alive():
             print(f"{npc.name} has died. Final State: {npc.state()}")
             break
+
+        if day % 3 == 0:
+            reflect_llm(npc)
 
         time.sleep(1)
 
