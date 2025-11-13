@@ -15,6 +15,18 @@ ACTION_OUTCOMES = {
             "Receive a gift from Keeper",
             "Fight the Keeper"
         ],
+        "outcome_vals": [
+            {
+            "mood": 10,
+            "health": 0,
+            "money": 0
+            },
+            {
+            "mood": -10,
+            "health": 0,
+            "money": 0
+            },
+        ],
         "probs": [0.5, 0.15, 0.3, 0.05]
     },
     "Accept a Quest": {
