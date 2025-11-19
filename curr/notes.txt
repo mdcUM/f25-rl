@@ -1,0 +1,29 @@
+IMPROVEMENTS / TODO:
+
+================= EASY ===================
+
+- The NPC state should be reported at the end of each day, rather than us seeing the result after the 10 days complete.
+
+- Prompt issues:
+    - LLM makes up player stats (like +10 expereince when experience doesn't exist)
+    - Maybe give the LLM the previous journal entry for context (e.g. maybe dont get drunk twice in a row, or do if mood is terrible)
+    - Journal Entries don't correspond with each other yet (e.g. mismatching dates "Year of Golden anvil" vs "1360")
+    - Add overall Description of the 10 days after the simulation.
+    - Add explanation (for us) to see the reasoning of why the LLM makes each decision between the 3 actions.
+
+- World state changes (e.g. famine increases chances of attacks and decreases money earned)
+
+
+================= HARD ===================
+
+- Add the RL element (NPC isn't actually learning yet, LLM just makes decisions between 3 actions based on context)
+
+- Allow player to influence the NPC
+
+- Determine what way the hardcoded character traits influence their actions (Aldric is curious, what does that really mean in terms of his decision to do one of the actions)
+
+- Multiple NPCs (that interact with each other?)
+
+
+
+
