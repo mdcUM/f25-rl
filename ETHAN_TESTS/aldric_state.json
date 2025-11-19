@@ -4,14 +4,23 @@
     "greed": 0.4
   },
   "goals": [
-    "seek knowledge",
-    "travel and explore"
+    "refine knowledge",
+    "appresent simplicity"
   ],
   "memory": [
-    "Chat with Keeper \u2192 Receive a gift from Keeper \u2192 Health potion +10 health",
-    "Chat with Keeper \u2192 Receive a gift from Keeper \u2192 Health potion +10 health",
-    "Accept a Quest \u2192 Defend a Caravan \u2192 Abandon caravan -10 health",
-    "Chat with Keeper \u2192 Receive a gift from Keeper \u2192 Health potion +10 health",
-    "Chat with Keeper \u2192 Keeper encourages you (+10 mood)"
-  ]
+    "Chat with Keeper \u2192 Keeper discourages you (-10 mood)",
+    "Chat with Keeper \u2192 Keeper discourages you (-10 mood)",
+    "Chat with Keeper \u2192 Keeper encourages you (+10 mood)",
+    "Chat with Keeper \u2192 Keeper encourages you (+10 mood)",
+    "Chat with Keeper \u2192 Keeper discourages you (-10 mood)"
+  ],
+  "short_term": {
+    "recent_events": [
+      "Chat with Keeper \u2192 Keeper discourages you (-10 mood)",
+      "Chat with Keeper \u2192 Keeper discourages you (-10 mood)",
+      "Chat with Keeper \u2192 Keeper encourages you (+10 mood)",
+      "Chat with Keeper \u2192 Keeper encourages you (+10 mood)",
+      "Chat with Keeper \u2192 Keeper discourages you (-10 mood)"
+    ]
+  }
 }

@@ -87,13 +87,16 @@ class CharacterMemory:
                 "traits": {"curiosity": 0.6, "greed": 0.4},
                 "goals": ["seek adventure", "earn wealth"],
                 "memory": [],
+                "short_term": {"recent_events": []},
             }
 
         self.traits = data["traits"]
         self.goals = data["goals"]
         self.memory = data["memory"]
+        self.short_term = ShortTermMemory.from_dict(data.get("short_term", {}))
 
-        self.short_term = {"last_reward": 0.0, "emotion": "neutral"}
+        #self.short_term_memory = ShortTermMemory()
+        #self.short_term = {"last_reward": 0.0, "emotion": "neutral"}
 
     def remember(self, action: str, outcome: str):
         """Add (action, outcome) summary to memory (keep last 5)."""
@@ -111,10 +114,33 @@ class CharacterMemory:
     def save(self):
         with open(self.file_path, "w") as f:
             json.dump(
-                {"traits": self.traits, "goals": self.goals, "memory": self.memory},
+                {"traits": self.traits, "goals": self.goals, "memory": self.memory,
+                "short_term": self.short_term.to_dict()},
                 f,
                 indent=2,
             )
+
+class ShortTermMemory:
+    def __init__(self, max_size=5):
+        self.max_size = max_size
+        self.recent_events = []
+
+    def add(self, event: str):
+        self.recent_events.append(event)
+        # keep only last N
+        if len(self.recent_events) > self.max_size:
+            self.recent_events.pop(0)
+
+    def to_dict(self):
+        return {
+            "recent_events": self.recent_events
+        }
+
+    @staticmethod
+    def from_dict(data):
+        stm = ShortTermMemory()
+        stm.recent_events = data.get("recent_events", [])
+        return stm
 
 
 # ============================================================
@@ -132,6 +158,8 @@ class NPC:
 
         # Persistent memory system
         self.memory = CharacterMemory(name, f"{name.lower()}_state.json")
+        self.short_term_memory = self.memory.short_term
+
 
     def state(self) -> Dict[str, Any]:
         return {
@@ -208,6 +236,9 @@ def perform_action(npc: NPC, action: str) -> str:
         outcome = f"{outcome} → {sub_outcome}"
 
     npc.memory.remember(action, outcome)
+    npc.short_term_memory.add(f"{action} → {outcome}")
+    npc.memory.short_term = npc.short_term_memory  # keep CharacterMemory in sync
+    npc.memory.save()  
 
     return outcome
 
@@ -227,6 +258,7 @@ You are roleplaying {npc.name}, a {', '.join(npc.traits)} adventurer resting in 
 
 Your long-term goals: {npc.memory.goals}.
 Recent memories: {npc.memory.summarize()}.
+Short-term events: {npc.short_term_memory.recent_events}.
 
 You may choose ONE of the following actions today: {action_list}.
 
@@ -255,6 +287,7 @@ Write a short (2-3 sentence) medieval-style journal entry describing the day of 
 Today's action: {action}.
 Outcome: {event}.
 Recent memories: {npc.memory.summarize()}.
+Short-term events: {npc.short_term_memory.recent_events}.
 Long-term goals: {npc.memory.goals}.
 NPC State at end: Health={npc.health}, Money={npc.money}, Mood={npc.mood}.
 Keep it immersive and in-character.
