@@ -117,11 +117,9 @@ ACTION: {available_actions[0]}
     return available_actions[0]
 
 
-# In llm_decisions.py - improve journal generation
 def describe_day_llm(npc: "NPC", action: str, event: str) -> str:
     """Generate consistent journal entries."""
     
-    # Establish a consistent date/era system
     day_number = len(npc.decision_log) + 1
     
     prompt = f"""Write a brief (2-3 sentence) journal entry for {npc.name}.
@@ -137,14 +135,23 @@ PREVIOUS ENTRY: {npc.last_report}
 STYLE GUIDELINES:
 - Write in first person as {npc.name}
 - Maintain medieval/fantasy tone
-- Reference the actual outcome (don't invent stats like "experience")
+- Reference the actual outcome (don't invent stats)
 - Show emotional state through word choice
 - Connect to previous entry if relevant
+
+Write ONLY the journal entry. Do not include notes, explanations, or meta-commentary.
 
 Example format: "Today I [action]. [Outcome and reaction]. [Brief reflection on state/feelings]."
 """
     
     report = ollama_chat(prompt, temperature=0.6)
+    
+    # Strip out any meta-commentary in parentheses or after "Note:"
+    if "(Note:" in report:
+        report = report.split("(Note:")[0].strip()
+    if "(I tried" in report:
+        report = report.split("(I tried")[0].strip()
+    
     npc.last_report = report
     return report
 
