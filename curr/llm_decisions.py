@@ -2,6 +2,7 @@ import json
 import re
 from typing import TYPE_CHECKING
 from llm_interface import ollama_chat
+from config import WORLD_CONTEXT
 
 if TYPE_CHECKING:
     from npc import NPC
@@ -19,67 +20,85 @@ def get_human_input() -> str:
 
 def choose_action_llm(npc: "NPC", human_advice: str = None) -> str:
     available_actions = ["Chat with Keeper", "Get Drunk"]
+    
+    # Quest availability
     if npc.mood > 50 and npc.health > 60:
         available_actions.append("Accept a Quest")
-
+    
+    # Marketplace and Woods always available
+    available_actions.extend(["Visit the Marketplace", "Explore the Woods"])
+    
     action_list = ", ".join(available_actions)
 
     previous_context = (
-        f"Yesterday's journal: {npc.last_report}"
+        f"Yesterday: {npc.last_report}"
         if npc.last_report != "Woke up in the tavern."
         else ""
     )
 
-    # -------- ADVICE SECTION (only if there is advice) ----------
+    # Calculate current state descriptors
+    health_status = "HEALTHY" if npc.health > 60 else "INJURED" if npc.health > 40 else "CRITICAL"
+    money_status = "WEALTHY" if npc.money > 100 else "COMFORTABLE" if npc.money > 50 else "BROKE"
+    mood_status = "CONTENT" if npc.mood > 60 else "NEUTRAL" if npc.mood > 40 else "MISERABLE"
+
+    # -------- ADVICE SECTION ----------
     advice_section = ""
     if human_advice:
-        npc.trust = min(100, npc.trust + 5)
+        npc.trust = min(100, npc.trust + 15)
 
         trust_tier = (
-            "You barely know this person and you're unsure whether to trust them."
+            "You barely know this person and may ignore their advice."
             if npc.trust < 30 else
-            "You somewhat trust this person and consider their intentions fair."
+            "You somewhat trust this person. Consider their advice carefully."
             if npc.trust < 70 else
-            "You strongly trust this person and value their guidance."
+            "You deeply trust this person. Their advice should heavily influence your decision."
         )
 
         advice_section = f"""
-Someone offers you advice: "{human_advice}"
+=== ADVICE FROM YOUR COMPANION ===
+"{human_advice}"
 Trust Level: {npc.trust:.1f}/100 — {trust_tier}
-Consider the advice only if it aligns with your needs.
+
+If trust >= 30: Their advice should be your PRIMARY consideration.
 """
 
-    # ---------- FINAL PROMPT ----------
-    prompt = f"""You are {npc.name}, a {', '.join(npc.traits)} adventurer.
+    # Get history
+    history = npc.memory.summarize()
 
-CURRENT STATE (Day {len(npc.decision_log) + 1}):
-- Health: {npc.health:.1f}/100
-- Money: {npc.money:.1f} gold
-- Mood: {npc.mood:.1f}/100
-- Trust Toward Advisor: {npc.trust:.1f}/100
+    # ---------- ENHANCED STORY PROMPT ----------
+    prompt = f"""You are {npc.name}, a {', '.join(npc.traits)} adventurer in the kingdom of Valdoria.
+
+{WORLD_CONTEXT}
+
+=== YOUR CURRENT SITUATION (Day {len(npc.decision_log) + 1}) ===
+Health: {npc.health:.1f} / 100 ({health_status})
+Money: {npc.money:.1f} gold ({money_status})
+Mood: {npc.mood:.1f} / 100 ({mood_status})
 
 {previous_context}
 
-GOALS: {', '.join(npc.memory.goals)}
-RECENT HISTORY: {npc.memory.summarize()}
+=== YOUR RECENT ADVENTURES ===
+{history}
+
+Your Goals: {', '.join(npc.memory.goals)}
 
 {advice_section}
 
-AVAILABLE ACTIONS: {action_list}
+=== AVAILABLE ACTIONS ===
+{action_list}
 
-DECISION FRAMEWORK:
-- Health < 40: Avoid danger, prioritize survival
-- Money < 50: Seek profitable opportunities
-- Mood < 40: Seek enjoyment to maintain morale
-- Advice from humans is only considered when they speak AND trust is high
+=== DECISION GUIDANCE ===
+Consider your circumstances carefully:
+- If your companion gave advice AND trust >= 30: Their counsel should guide you
+- If health < 40: Prioritize survival (avoid dangerous quests)
+- If money < 20: You desperately need income
+- If mood < 40: Seek joy or purpose to maintain your spirit
+- Review your recent adventures - what patterns emerge? What worked? What failed?
 
-Think through:
-1. What's my most pressing need right now?
-2. Should advice matter today? (Only if present and trust justifies it.)
-3. Which action best serves my priorities?
+The kingdom's fate may hinge on your choices. Choose wisely.
 
-Respond EXACTLY like this:
-REASONING: [One sentence]
+Respond in this format:
+REASONING: [One sentence reflecting on your situation]
 ACTION: {available_actions[0]}
 """
 

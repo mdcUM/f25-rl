@@ -30,32 +30,96 @@ class NPC:
         }
 
     def adjust_state(self, effect: str):
-        if "+10 mood" in effect:
+        """Apply state changes with support for complex outcomes."""
+        # Mood changes
+        if "+5 mood" in effect:
+            self.mood = min(100, self.mood + 5)
+        elif "+10 mood" in effect:
             self.mood = min(100, self.mood + 10)
-        elif "-10 mood" in effect:
-            self.mood = max(0, self.mood - 10)
+        elif "+15 mood" in effect:
+            self.mood = min(100, self.mood + 15)
         elif "+20 mood" in effect:
             self.mood = min(100, self.mood + 20)
-        elif "Lose 0.2 health" in effect:
-            self.health = max(0, self.health - 20)
-        elif "Lose 0.5 money" in effect:
-            self.money = max(0, self.money * 0.5)
-        elif "+20 money" in effect:
-            self.money += 20
-        elif "+10 money" in effect:
-            self.money += 10
-        elif "+50 money" in effect:
-            self.money += 50
-        elif "-10 health" in effect:
-            self.health = max(0, self.health - 10)
-        elif "-20 health" in effect:
-            self.health = max(0, self.health - 20)
-        elif "-30 health" in effect:
-            self.health = max(0, self.health - 30)
+        elif "-5 mood" in effect:
+            self.mood = max(0, self.mood - 5)
+        elif "-10 mood" in effect:
+            self.mood = max(0, self.mood - 10)
+        elif "-15 mood" in effect:
+            self.mood = max(0, self.mood - 15)
+        elif "-20 mood" in effect:
+            self.mood = max(0, self.mood - 20)
+        
+        # Health changes
         elif "+10 health" in effect:
             self.health = min(100, self.health + 10)
+        elif "+15 health" in effect:
+            self.health = min(100, self.health + 15)
+        elif "+20 health" in effect:
+            self.health = min(100, self.health + 20)
+        elif "+25 health" in effect:
+            self.health = min(100, self.health + 25)
+        elif "-10 health" in effect:
+            self.health = max(0, self.health - 10)
+        elif "-15 health" in effect:
+            self.health = max(0, self.health - 15)
+        elif "-20 health" in effect:
+            self.health = max(0, self.health - 20)
+        elif "-25 health" in effect:
+            self.health = max(0, self.health - 25)
+        elif "-30 health" in effect:
+            self.health = max(0, self.health - 30)
+        elif "-35 health" in effect:
+            self.health = max(0, self.health - 35)
+        elif "Lose 0.2 health" in effect:
+            self.health = max(0, self.health - 20)
+        
+        # Money changes
+        elif "+10 money" in effect:
+            self.money += 10
+        elif "+12 money" in effect:
+            self.money += 12
+        elif "+15 money" in effect:
+            self.money += 15
+        elif "+20 money" in effect:
+            self.money += 20
+        elif "+25 money" in effect:
+            self.money += 25
+        elif "+30 money" in effect:
+            self.money += 30
+        elif "+35 money" in effect:
+            self.money += 35
+        elif "+40 money" in effect:
+            self.money += 40
+        elif "+50 money" in effect:
+            self.money += 50
+        elif "+80 money" in effect:
+            self.money += 80
+        elif "-10 money" in effect:
+            self.money = max(0, self.money - 10)
+        elif "-15 money" in effect:
+            self.money = max(0, self.money - 15)
+        elif "-20 money" in effect:
+            self.money = max(0, self.money - 20)
+        elif "-25 money" in effect:
+            self.money = max(0, self.money - 25)
+        elif "-30 money" in effect:
+            self.money = max(0, self.money - 30)
+        elif "Lose 0.5 money" in effect:
+            self.money = max(0, self.money * 0.5)
+        elif "spend 5 money" in effect:
+            self.money = max(0, self.money - 5)
+        elif "spend 10 money" in effect:
+            self.money = max(0, self.money - 10)
+        elif "spend 15 money" in effect:
+            self.money = max(0, self.money - 15)
+        elif "spend 20 money" in effect:
+            self.money = max(0, self.money - 20)
+        
+        # Special outcomes
         elif "Die" in effect:
             self.health = 0
+        elif "Nothing happens" in effect:
+            pass  # No state change
 
     def alive(self) -> bool:
         return self.health > 0

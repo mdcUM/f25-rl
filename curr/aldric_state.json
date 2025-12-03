@@ -8,13 +8,34 @@
     "earn wealth"
   ],
   "memory": [
-    "Chat with Keeper \u2192 Receive a gift from Keeper \u2192 Health potion +10 health",
-    "Accept a Quest \u2192 Defend a Caravan \u2192 Abandon caravan -10 health"
+    {
+      "action": "Chat with Keeper",
+      "outcome": "Keeper encourages you (+10 mood)"
+    },
+    {
+      "action": "Get Drunk",
+      "outcome": "Lose 0.5 money"
+    },
+    {
+      "action": "Accept a Quest",
+      "outcome": "Defend a Caravan \u2192 Abandon caravan -10 health"
+    },
+    {
+      "action": "Chat with Keeper",
+      "outcome": "Receive a gift from Keeper \u2192 +20 money"
+    },
+    {
+      "action": "Chat with Keeper",
+      "outcome": "Mira warns you about danger (-10 mood)"
+    }
   ],
   "short_term": {
     "recent_events": [
-      "Chat with Keeper \u2192 Receive a gift from Keeper \u2192 Health potion +10 health",
-      "Accept a Quest \u2192 Defend a Caravan \u2192 Abandon caravan -10 health"
+      "Chat with Keeper \u2192 Keeper encourages you (+10 mood)",
+      "Get Drunk \u2192 Lose 0.5 money",
+      "Accept a Quest \u2192 Defend a Caravan \u2192 Abandon caravan -10 health",
+      "Chat with Keeper \u2192 Receive a gift from Keeper \u2192 +20 money",
+      "Chat with Keeper \u2192 Mira warns you about danger (-10 mood)"
     ]
   }
 }

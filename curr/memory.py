@@ -1,5 +1,6 @@
 import json
 import os
+import fcntl
 from typing import Dict, Any
 
 
@@ -7,8 +8,6 @@ from typing import Dict, Any
 # MEMORY SYSTEM
 # ============================================================
 class CharacterMemory:
-    """Handles persistent and short-term memory for an NPC."""
-
     def __init__(self, name: str, file_path: str):
         self.name = name
         self.file_path = file_path
@@ -19,33 +18,51 @@ class CharacterMemory:
             data = {
                 "traits": {"curiosity": 0.6, "greed": 0.4},
                 "goals": ["seek adventure", "earn wealth"],
-                "memory": [],
+                "memory": [], 
                 "short_term": {"recent_events": []},
             }
 
         self.traits = data["traits"]
         self.goals = data["goals"]
-        self.memory = data["memory"]
+        self.memory = []
+        
+        for entry in data["memory"]:
+            if isinstance(entry, str):
+                # Parse "action → outcome" format
+                parts = entry.split(" → ", 1)
+                if len(parts) == 2:
+                    self.memory.append({"action": parts[0], "outcome": parts[1]})
+                else:
+                    self.memory.append({"action": entry, "outcome": ""})
+            else:
+                self.memory.append(entry)
+        
         self.short_term = ShortTermMemory.from_dict(data.get("short_term", {}))
 
     def remember(self, action: str, outcome: str):
-        """Add (action, outcome) summary to memory (keep last 5)."""
-        entry = f"{action} → {outcome}"
-        self.memory.append(entry)
+        """Add (action, outcome) as structured data (keep last 5)."""
+        self.memory.append({"action": action, "outcome": outcome})
         if len(self.memory) > 5:
             self.memory.pop(0)
         self.save()
 
     def summarize(self) -> str:
+        """Return clear summary with proper boundaries."""
         if not self.memory:
             return "No memories yet."
-        return " → ".join(self.memory[-5:])
+        
+        lines = [f"  • {mem}" for mem in self.memory[-5:]]
+        return "\n".join(lines)
 
     def save(self):
         with open(self.file_path, "w") as f:
             json.dump(
-                {"traits": self.traits, "goals": self.goals, "memory": self.memory,
-                "short_term": self.short_term.to_dict()},
+                {
+                    "traits": self.traits,
+                    "goals": self.goals,
+                    "memory": self.memory, 
+                    "short_term": self.short_term.to_dict()
+                },
                 f,
                 indent=2,
             )
