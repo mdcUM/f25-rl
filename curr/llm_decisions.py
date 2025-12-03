@@ -186,7 +186,9 @@ Respond as JSON: {{ "goals": [...], "reflection": "<short text>" }}
         try:
             data = json.loads(match.group())
             npc.memory.goals = data.get("goals", npc.memory.goals)
-            npc.memory.remember(f"Reflection: {data.get('reflection', '')}")
+            reflection_text = data.get('reflection', 'I pondered my journey')
+            npc.memory.remember("Reflection", reflection_text)
+            
             npc.memory.save()
         except (json.JSONDecodeError, KeyError, ValueError):
             pass

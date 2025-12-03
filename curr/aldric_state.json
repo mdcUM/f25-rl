@@ -4,18 +4,38 @@
     "greed": 0.4
   },
   "goals": [
-    "seek adventure",
-    "earn wealth"
+    {
+      "name": "seek adventure",
+      "priority": 1
+    },
+    {
+      "name": "earn wealth",
+      "priority": 2
+    }
   ],
   "memory": [
     {
+      "action": "Chat with Keeper",
+      "outcome": "Mira warns you about danger (-10 mood)"
+    },
+    {
       "action": "Visit the Marketplace",
-      "outcome": "You find a merchant selling supplies \u2192 Prices are too high, you leave empty-handed (Nothing happens)"
+      "outcome": "You find a merchant selling supplies \u2192 You buy healing supplies (spend 15 money, +20 health)"
+    },
+    {
+      "action": "Chat with Keeper",
+      "outcome": "Mira offers you a gift \u2192 A healing potion from her cellar (+15 health)"
+    },
+    {
+      "action": "Reflection",
+      "outcome": "I've been facing some danger lately, and I think I should prioritize my safety a bit more. Maybe it's time to focus on finding stronger gear or learning new combat skills."
     }
   ],
   "short_term": {
     "recent_events": [
-      "Visit the Marketplace \u2192 You find a merchant selling supplies \u2192 Prices are too high, you leave empty-handed (Nothing happens)"
+      "Chat with Keeper \u2192 Mira warns you about danger (-10 mood)",
+      "Visit the Marketplace \u2192 You find a merchant selling supplies \u2192 You buy healing supplies (spend 15 money, +20 health)",
+      "Chat with Keeper \u2192 Mira offers you a gift \u2192 A healing potion from her cellar (+15 health)"
     ]
   }
 }
