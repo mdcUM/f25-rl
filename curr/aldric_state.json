@@ -4,38 +4,39 @@
     "greed": 0.4
   },
   "goals": [
-    {
-      "name": "seek adventure",
-      "priority": 1
-    },
-    {
-      "name": "earn wealth",
-      "priority": 2
-    }
+    "seek adventure",
+    "earn wealth",
+    "gain knowledge about the dragon"
   ],
   "memory": [
     {
       "action": "Chat with Keeper",
-      "outcome": "Mira warns you about danger (-10 mood)"
+      "outcome": "You insult Mira and she throws you out (Fight the Keeper)"
     },
     {
       "action": "Visit the Marketplace",
-      "outcome": "You find a merchant selling supplies \u2192 You buy healing supplies (spend 15 money, +20 health)"
+      "outcome": "You win at a street game (+15 money)"
     },
     {
       "action": "Chat with Keeper",
-      "outcome": "Mira offers you a gift \u2192 A healing potion from her cellar (+15 health)"
+      "outcome": "Mira offers you a gift \u2192 Gold coins from her savings (+25 money)"
     },
     {
       "action": "Reflection",
-      "outcome": "I've been facing some danger lately, and I think I should prioritize my safety a bit more. Maybe it's time to focus on finding stronger gear or learning new combat skills."
+      "outcome": "My recent experiences have shown me that being reckless and insulting others (like I did with Mira) can lead to negative consequences. It's essential for me to balance my desire for excitement and gain with a sense of responsibility, respect, and caution towards those around me."
+    },
+    {
+      "action": "Chat with Keeper",
+      "outcome": "Mira shares encouraging words (+10 mood)"
     }
   ],
   "short_term": {
     "recent_events": [
-      "Chat with Keeper \u2192 Mira warns you about danger (-10 mood)",
-      "Visit the Marketplace \u2192 You find a merchant selling supplies \u2192 You buy healing supplies (spend 15 money, +20 health)",
-      "Chat with Keeper \u2192 Mira offers you a gift \u2192 A healing potion from her cellar (+15 health)"
+      "Chat with Keeper \u2192 Mira offers you a mysterious map \u2192 Map shows secret passage through mountains (+10 mood)",
+      "Chat with Keeper \u2192 You insult Mira and she throws you out (Fight the Keeper)",
+      "Visit the Marketplace \u2192 You win at a street game (+15 money)",
+      "Chat with Keeper \u2192 Mira offers you a gift \u2192 Gold coins from her savings (+25 money)",
+      "Chat with Keeper \u2192 Mira shares encouraging words (+10 mood)"
     ]
   }
 }

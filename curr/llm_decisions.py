@@ -65,6 +65,25 @@ If trust >= 30: Their advice should be your PRIMARY consideration.
     # Get history
     history = npc.memory.summarize()
 
+    # Helper to safely format goals that may be a list of strings or dicts
+    def _format_goals(goals) -> str:
+        try:
+            if isinstance(goals, list):
+                parts = []
+                for g in goals:
+                    if isinstance(g, dict):
+                        parts.append(
+                            g.get("name")
+                            or g.get("goal")
+                            or json.dumps(g)
+                        )
+                    else:
+                        parts.append(str(g))
+                return ", ".join(parts)
+            return str(goals)
+        except Exception:
+            return str(goals)
+
     # ---------- ENHANCED STORY PROMPT ----------
     prompt = f"""You are {npc.name}, a {', '.join(npc.traits)} adventurer in the kingdom of Valdoria.
 
@@ -80,7 +99,7 @@ Mood: {npc.mood:.1f} / 100 ({mood_status})
 === YOUR RECENT ADVENTURES ===
 {history}
 
-Your Goals: {', '.join(npc.memory.goals)}
+Your Goals: {_format_goals(npc.memory.goals)}
 
 {advice_section}
 

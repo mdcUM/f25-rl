@@ -1,0 +1,71 @@
+[System] Cleared previous save file: aldric_state.json
+=== Beginning Simulation with Aldric ===
+
+--- DAY 1 ---
+Current State: Health=100.0, Money=20.0, Mood=50.0
+
+Aldric's reasoning: With my current financial situation and lack of experience, it would be wise to gather information and hear the whispers of the tavern keeper Mira, who is known for knowing everyone's secrets.
+Chosen action: Chat with Keeper
+Outcome: Mira shares encouraging words (+10 mood)
+Report:
+Today I spoke with Keeper in the tavern. Mira's words brought a measure of calm to my troubled mind, lifting my spirits and steadying my nerves. As I sit here now, I feel the weight of yesterday's uncertainty begin to lift, replaced by a sense of resolve.
+
+--- DAY 2 ---
+Current State: Health=100.0, Money=20.0, Mood=55.0
+
+>>> What advice do you give to the NPC? (or press Enter to skip)
+Your advice: Nothing good comes from playing it safe. You should accept a quest.
+
+Aldric's reasoning: I've already spoken with Mira, but her words of encouragement still linger, and I sense that she might have more insight into the kingdom's troubles, potentially revealing new opportunities for adventure or guidance.
+Chosen action: Visit the Marketplace
+Outcome: You discover a black market → You buy forbidden supplies (spend 20 money, +15 health, +5 mood)
+Report:
+Today I ventured into the Marketplace, seeking supplies for the road ahead. In a hidden corner, I stumbled upon a black market, where I acquired forbidden goods that will serve me well in these uncertain times - my health is now bolstered and my mood lifted. As I walk away with 20 coins lighter, yet feeling more resolute than ever, I am reminded of Keeper's words: the path ahead may be treacherous, but with each step, I grow stronger.
+
+--- DAY 3 ---
+Current State: Health=100, Money=0, Mood=65.0
+
+>>> What advice do you give to the NPC? (or press Enter to skip)
+Your advice: You desperately need money. Go accept a quest.
+
+Aldric's reasoning: As a broke and somewhat trusted adventurer, I need to consider the advice of my companion, who suggests accepting a quest for much-needed income.
+Chosen action: Accept a Quest
+Outcome: Hunt the Northern Dragon → You discover the dragon guards an ancient secret (+30 money, +10 mood)
+Report:
+Today I hunted the Northern Dragon, a beast of legend. Its scales now lie before me, and with them, an ancient secret revealed to my eyes - I've been rewarded handsomely for this perilous task. My health remains unscathed, but it's the promise of hidden knowledge that truly fills my heart with hope, reminding me that each challenge brings me closer to uncovering the truth that lies ahead.
+
+--- DAY 4 ---
+Current State: Health=100, Money=30, Mood=80.0
+
+>>> What advice do you give to the NPC? (or press Enter to skip)
+Your advice: Look how good that last quest went! You should accept another one.
+
+Aldric's reasoning: With a newfound wealth of knowledge from the Northern Dragon's secret and a modest increase in funds, I'm eager to explore more hidden secrets and potentially uncover additional mysteries that could aid me in navigating the kingdom's precarious state.
+Chosen action: Accept a Quest
+Outcome: Defend a Merchant Caravan → Successful defense, standard payment (+20 money)
+Report:
+Today I accepted a humble Quest to defend a Merchant Caravan from those who would see its riches plundered. Our victory was swift, and the caravan's safe passage earned me a modest payment of 20 gold pieces - a welcome addition to my coffers. With my health intact and optimism renewed, I sense that this small triumph is merely a precursor to greater deeds yet to come, echoing the promise of hidden knowledge revealed to me by the Northern Dragon's scales.
+
+--- DAY 5 ---
+Current State: Health=100, Money=50, Mood=85.0
+
+>>> What advice do you give to the NPC? (or press Enter to skip)
+Your advice: Third time's the charm! Accept another quest and see what happens.
+
+Aldric's reasoning: With my current financial stability and renewed optimism, I should seek guidance from Mira to better understand the unfolding events in Valdoria and potentially uncover new opportunities or quests.
+Chosen action: Visit the Marketplace
+Outcome: You witness a public execution → You're deeply disturbed by the brutality (-15 mood)
+Report:
+Today I visited the Marketplace, a hub of commerce and life, but its vibrant tapestry was marred by a gruesome spectacle - a public execution that left me shaken to my core. The brutal display has left an indelible mark on my soul, and I fear it may take more than mere gold or victory to wash away this darkness. My optimism, forged in the fire of our caravan's triumph, now falters like a candle in the wind, its flame flickering with doubt.
+
+--- DAY 6 ---
+Current State: Health=100, Money=50, Mood=75.0
+
+>>> What advice do you give to the NPC? (or press Enter to skip)
+Your advice: Okay, yesterday didn't go too well. You can't just hang around the town square and expect something good to happen to you. You have to find some action yourself! Accept another quest.
+
+Aldric's reasoning: Given my companion's advice, my current financial struggles, and the need to find purpose in a time of darkness, I believe seeking guidance from Keeper Mira will provide valuable insight into potential opportunities for adventure and income.
+Chosen action: Accept a Quest
+Outcome: Investigate the Abandoned Mine → You find valuable ore (+25 money)
+Report:
+Today I ventured into the Abandoned Mine, a quest that brought me solace from the darkness of yesterday's Marketplace. The discovery of valuable ore has swelled my coffers with 25 gold, a respite from the turmoil that still lingers within me. Though this small victory steadies my heart, I fear the shadows cast by the execution will take time to dispel.

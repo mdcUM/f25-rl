@@ -50,7 +50,7 @@ class NPC:
             self.mood = max(0, self.mood - 20)
         
         # Health changes
-        elif "+10 health" in effect:
+        if "+10 health" in effect:
             self.health = min(100, self.health + 10)
         elif "+15 health" in effect:
             self.health = min(100, self.health + 15)
@@ -74,7 +74,7 @@ class NPC:
             self.health = max(0, self.health - 20)
         
         # Money changes
-        elif "+10 money" in effect:
+        if "+10 money" in effect:
             self.money += 10
         elif "+12 money" in effect:
             self.money += 12
@@ -116,9 +116,9 @@ class NPC:
             self.money = max(0, self.money - 20)
         
         # Special outcomes
-        elif "Die" in effect:
+        if "Die" in effect:
             self.health = 0
-        elif "Nothing happens" in effect:
+        if "Nothing happens" in effect:
             pass  # No state change
 
     def alive(self) -> bool:
