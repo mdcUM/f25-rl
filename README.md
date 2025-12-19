@@ -1,6 +1,6 @@
 # NPC Behavior Simulation with Zero-Shot LLM Prompting
 
-[Getting started with Ollama](https://medium.com/@arunpatidar26/run-llm-locally-ollama-8ea296747505)
+[Download Ollama](https://ollama.com/)
 
 Then run:
 
