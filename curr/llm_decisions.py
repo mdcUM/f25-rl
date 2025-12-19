@@ -133,7 +133,7 @@ ACTION: {available_actions[0]}
         if act in response:
             return act
 
-    return available_actions[0]
+    return "Get Drunk"
 
 
 def describe_day_llm(npc: "NPC", action: str, event: str) -> str:
